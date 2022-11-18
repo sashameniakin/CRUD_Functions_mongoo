@@ -6,6 +6,33 @@ import { useState, useEffect } from "react";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState(null); //"Food", "Technology"
+  const [shouldReload, setShouldReload] = useState(true);
+
+  /*   const handleSubmit = async (event) => {
+    try {
+      event.preventDefault(); */
+  /* const data = event.target; */
+  /* 
+      const data = {
+        name: event.target.name.value,
+        category: event.target.category.value,
+        details: event.target.details.value,
+      };
+      console.log(data);
+      const JSONdata = JSON.stringify(data);
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSONdata,
+      }; */
+  /*    const response = await fetch("/api/products/", options);
+      const result = await response.json();
+      alert(`Is this your full name: ${result.data}`);
+    } catch (error) {
+      console.log(error);
+      alert(error.message);
+    }
+  }; */
 
   useEffect(() => {
     const getProducts = async () => {
@@ -17,6 +44,7 @@ const Products = () => {
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
+          setShouldReload(false);
         } else {
           throw new Error(
             `Fetch fehlgeschlagen mit Status: ${response.status}`
@@ -28,7 +56,19 @@ const Products = () => {
       }
     };
     getProducts();
-  }, [categoryFilter]);
+  }, [categoryFilter, shouldReload]);
+
+  const deleteProduct = async (id) => {
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: "DELETE",
+      });
+      setShouldReload(true);
+    } catch (error) {
+      console.log(error);
+      alert(error.message);
+    }
+  };
 
   return (
     <>
@@ -39,6 +79,22 @@ const Products = () => {
       </Head>
       <div>
         <h1 className="test">Products Dashboard</h1>
+        <h3>Add new Product</h3>
+        {/*        <form onSubmit={handleSubmit}>
+          <label>
+            Name:
+            <input type="text" id="name" name="name" />
+          </label>
+          <label>
+            Category:
+            <input type="text" id="category" name="category" />
+          </label>
+          <label>
+            Detail:
+            <input type="text" id="detail" name="detail" />
+            <button type="submit">Submit</button>
+          </label>
+        </form> */}
         <select
           onChange={(event) => {
             if (event.target.value === "all") {
@@ -58,6 +114,9 @@ const Products = () => {
             return (
               <li key={product._id}>
                 <Link href={`/products/${product._id}`}>{product.name}</Link>
+                <button onClick={() => deleteProduct(product._id)}>
+                  DELETE
+                </button>
               </li>
             );
           })}
