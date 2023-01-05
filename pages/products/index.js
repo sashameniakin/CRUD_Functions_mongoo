@@ -8,31 +8,32 @@ const Products = () => {
   const [categoryFilter, setCategoryFilter] = useState(null); //"Food", "Technology"
   const [shouldReload, setShouldReload] = useState(true);
 
-  /*   const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     try {
-      event.preventDefault(); */
-  /* const data = event.target; */
-  /* 
-      const data = {
-        name: event.target.name.value,
-        category: event.target.category.value,
-        details: event.target.details.value,
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(event.target));
+
+      const newProduct = {
+        name: data.name,
+        category: data.category,
+        details: data.details,
       };
       console.log(data);
-      const JSONdata = JSON.stringify(data);
+
       const options = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSONdata,
-      }; */
-  /*    const response = await fetch("/api/products/", options);
+        body: JSON.stringify(newProduct),
+      };
+      const response = await fetch("/api/products/", options);
       const result = await response.json();
-      alert(`Is this your full name: ${result.data}`);
+      setShouldReload(true);
+      /*   alert(`Is this your full name: ${result.data}`); */
     } catch (error) {
       console.log(error);
       alert(error.message);
     }
-  }; */
+  };
 
   useEffect(() => {
     const getProducts = async () => {
@@ -80,21 +81,7 @@ const Products = () => {
       <div>
         <h1 className="test">Products Dashboard</h1>
         <h3>Add new Product</h3>
-        {/*        <form onSubmit={handleSubmit}>
-          <label>
-            Name:
-            <input type="text" id="name" name="name" />
-          </label>
-          <label>
-            Category:
-            <input type="text" id="category" name="category" />
-          </label>
-          <label>
-            Detail:
-            <input type="text" id="detail" name="detail" />
-            <button type="submit">Submit</button>
-          </label>
-        </form> */}
+
         <select
           onChange={(event) => {
             if (event.target.value === "all") {
@@ -121,6 +108,21 @@ const Products = () => {
             );
           })}
         </ul>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Name:
+            <input type="text" id="name" name="name" />
+          </label>
+          <label>
+            Category:
+            <input type="text" id="category" name="category" />
+          </label>
+          <label>
+            Detail:
+            <input type="text" id="detail" name="detail" />
+            <button type="submit">Submit</button>
+          </label>
+        </form>
       </div>
     </>
   );
